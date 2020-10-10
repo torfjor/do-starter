@@ -9,7 +9,6 @@ import (
 )
 
 type RandomQuoter struct {
-	client *http.Client
 }
 
 const quoteAPIEndpoint = "https://api.whatdoestrumpthink.com/api/v1/quotes/random"
