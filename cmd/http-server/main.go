@@ -15,9 +15,13 @@ func main() {
 		port = "8080"
 	}
 
+	mux := http.NewServeMux()
+	mux.HandleFunc("/greet", do_starter.HelloHandler)
+	mux.HandleFunc("/quote", do_starter.QuoteHandler(&do_starter.RandomQuoter{}))
+
 	srv := &http.Server{
 		Addr:         ":" + port,
-		Handler:      http.HandlerFunc(do_starter.HelloHandler),
+		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
