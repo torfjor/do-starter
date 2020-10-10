@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-type wrappedResponseWriter struct {
+type responseRecorder struct {
 	status int
 	n      int
 	http.ResponseWriter
 }
 
-func (w *wrappedResponseWriter) Write(bytes []byte) (int, error) {
+func (w *responseRecorder) Write(bytes []byte) (int, error) {
 	n, err := w.ResponseWriter.Write(bytes)
 	if err != nil {
 		return n, err
@@ -22,14 +22,14 @@ func (w *wrappedResponseWriter) Write(bytes []byte) (int, error) {
 	return n, nil
 }
 
-func (w *wrappedResponseWriter) WriteHeader(statusCode int) {
+func (w *responseRecorder) WriteHeader(statusCode int) {
 	w.status = statusCode
 	w.ResponseWriter.WriteHeader(statusCode)
 }
 
 func RequestLogger(out io.Writer, h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		wr := &wrappedResponseWriter{200, 0, w}
+		wr := &responseRecorder{200, 0, w}
 		defer func(start time.Time) {
 			fmt.Fprintf(out, "ts=%s method=%s url=%s status=%d len=%d took=%s\n", start.Format(time.RFC3339), r.Method, r.URL, wr.status, wr.n, time.Since(start))
 		}(time.Now())
