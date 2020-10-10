@@ -7,6 +7,8 @@ import (
 	"time"
 
 	do_starter "github.com/torfjor/do-starter"
+	"github.com/torfjor/do-starter/pkg/chucknorris"
+	"github.com/torfjor/do-starter/pkg/trump"
 )
 
 func main() {
@@ -17,7 +19,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/greet", do_starter.HelloHandler)
-	mux.HandleFunc("/quote", do_starter.QuoteHandler(&do_starter.RandomQuoter{}))
+	mux.HandleFunc("/trump", do_starter.QuoteHandler(&trump.Quoter{}))
+	mux.HandleFunc("/chucknorris", do_starter.QuoteHandler(&chucknorris.Quoter{}))
 
 	srv := &http.Server{
 		Addr:         ":" + port,
@@ -29,7 +32,7 @@ func main() {
 
 	err := srv.ListenAndServe()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "ListenAndServe: %v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "ListenAndServe: %v", err)
 		os.Exit(1)
 	}
 }

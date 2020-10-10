@@ -1,4 +1,4 @@
-package do_starter
+package trump
 
 import (
 	"context"
@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/torfjor/do-starter/pkg/apix"
 )
 
-type RandomQuoter struct {
+const endpoint = "https://api.whatdoestrumpthink.com/api/v1/quotes/random"
+
+type Quoter struct {
 }
 
-const quoteAPIEndpoint = "https://api.whatdoestrumpthink.com/api/v1/quotes/random"
-
-func (r *RandomQuoter) GetQuote(ctx context.Context) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, quoteAPIEndpoint, nil)
+func (r *Quoter) GetQuote(ctx context.Context) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return "", err
 	}
@@ -25,12 +27,12 @@ func (r *RandomQuoter) GetQuote(ctx context.Context) (string, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("invalid api response code: %d", res.StatusCode)
+		return "", fmt.Errorf("%w: %d", apix.ErrInvalidAPIResponseCode, res.StatusCode)
 	}
 
 	ct := res.Header.Get("Content-Type")
 	if !strings.HasPrefix(ct, "application/json") {
-		return "", fmt.Errorf("invalid api response content type: %q", ct)
+		return "", fmt.Errorf("%w: %q", apix.ErrInvalidContentType, ct)
 	}
 
 	type apiResponse struct {
